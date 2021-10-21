@@ -87,7 +87,15 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const user = request.user
+  const {id} = request.query
+
+  const indexTodo = user.todos.findIndex((todo) => todo.id === id)
+  const todo = user.todos.find((todo) => todo.id === id)
+  const updatedTodo = {...todo, done: true}
+  user.todos[indexTodo] = updatedTodo
+
+  return response.status(201).json(user.todos)
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
