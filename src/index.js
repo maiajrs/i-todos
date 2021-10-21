@@ -79,6 +79,10 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
   const {title, deadline} = request.body
 
   const indexTodo = user.todos.findIndex((todo) => todo.id === id)
+
+  if (indexTodo) {
+    return response.status(404).json({error: "Esse todo não existe!"})
+  }
   const todo = user.todos.find((todo) => todo.id === id)
   const updatedTodo = {...todo, title, deadline: new Date(deadline)}
   user.todos[indexTodo] = updatedTodo
@@ -91,6 +95,11 @@ app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
   const {id} = request.query
 
   const indexTodo = user.todos.findIndex((todo) => todo.id === id)
+
+  if (indexTodo) {
+    return response.status(404).json({error: "Esse todo não existe!"})
+  }
+
   const todo = user.todos.find((todo) => todo.id === id)
   const updatedTodo = {...todo, done: true}
   user.todos[indexTodo] = updatedTodo
@@ -98,8 +107,21 @@ app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
   return response.status(201).json(user.todos)
 });
 
-app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {  
+  const user = request.user
+
+  const {id} = request.query
+
+  const indexTodo = user.todos.findIndex((todo) => todo.id === id)
+
+  if (indexTodo) {
+    return response.status(404).json({error: "Esse todo não existe!"})
+  }
+  
+  user.todos.splice(indexTodo, 1)
+
+  return response.status(204).send()
+
 });
 
 module.exports = app;
